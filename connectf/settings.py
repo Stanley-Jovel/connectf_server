@@ -225,3 +225,8 @@ NAMED_QUERIES = {
     'all_dap': "all_tfs[EDGE_TYPE='in vitro:Bound:DAP' or EDGE_TYPE='in vitro:Bound:ampDAP']",
     'in_planta_bound': "all_tfs[EDGE_TYPE='in planta:Bound']"
 }
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
