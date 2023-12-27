@@ -25,7 +25,7 @@ def process_meta_file(f: TextIO) -> pd.DataFrame:
     metadata = pd.Series(f.readlines())
 
     metadata = (metadata
-                .str.split(':', 1, True)
+                .str.split(':', n=1, expand=True)
                 .apply(lambda x: x.str.strip())
                 .replace([r'', nan_regex], np.nan, regex=True)
                 .dropna(subset=[0])
@@ -117,7 +117,7 @@ def insert_data(data_file, metadata_file, sep=',', dry_run=False):
 
     AnalysisData.objects.bulk_create(
         [AnalysisData(analysis=analysis, key_id=meta_key_frame.at[key, 'id'], value=val)
-         for key, val in metadata['data'].iteritems()])
+         for key, val in metadata['data'].items()])
 
     anno = pd.DataFrame(Annotation.objects.filter(
         gene_id__in=data.iloc[:, 0]
