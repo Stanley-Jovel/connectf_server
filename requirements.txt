@@ -1,6 +1,6 @@
 cycler
 decorator
-Django==4.0.10
+Django==5.0.0
 django-cors-headers
 fonttools
 gunicorn
