@@ -84,7 +84,7 @@ class OverviewView(View):
         analysisdata = pd.DataFrame(analysisdata_qs.values_list('analysis_id', 'key__name', 'value').iterator(),
                                     columns=['id', 'key', 'value'])
 
-        analysisdata['value'] = analysisdata['value'].str.replace(na_vals, 'None')
+        analysisdata['value'] = analysisdata['value'].str.replace(na_vals, 'None', regex=True)
 
         exp_type = analysisdata.loc[analysisdata['key'] == 'EXPERIMENT_TYPE', ['id', 'value']]
         exp_type['value'] = exp_type['value'].str.upper()
