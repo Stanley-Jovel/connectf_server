@@ -18,7 +18,7 @@ pyparsing
 python-dateutil
 pytz
 scikit-learn
-scipy
+scipy==1.11.4
 seaborn
 six
 statsmodels
