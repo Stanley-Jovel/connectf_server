@@ -1,0 +1,16 @@
+FROM python:3.11.6
+
+# Prevent Python from writing pyc files to disc and overflowing the container
+ENV PYTHONDONTWRITEBYTECODE 1
+# Prevent Python from buffering stdout and stderr and causing memory issues
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+COPY . /app
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+EXPOSE 8001
+
+# Start server in production
+CMD ["gunicorn", "--workers", "5", "--timeout", "200", "--bind", "0.0.0.0:8001", "-m", "007", "connectf.wsgi"]

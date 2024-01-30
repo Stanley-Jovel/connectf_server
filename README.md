@@ -184,6 +184,51 @@ server {
 
 The front end of this project is built with ReactJS. You can find it at [connectf_react](https://github.com/coruzzilab/connectf_react).
 
+### Containerization
+
+To run both the backend and frontend in a containerized environment, you can use the provided `Dockerfiles` and `docker-compose.yml` files.
+
+- 1. Make sure the folders for projects `connectf_react` and `connectf_server` are siblings.
+- 2. cd into connectf_react and build a production version of the React app
+```bash
+cd ../connectf_react
+npm run build
+```
+- 3. cd back to connectf_server and make sure the `config.yaml` file is set up correctly.
+```yaml
+SECRET_KEY: 'SOME_SECRET_KEY'  # see https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key
+DEBUG: False
+DATABASE:
+  NAME: 'connectf'
+  USER: 'connectfuser'
+  PASSWORD: 'connectfpwd'
+  HOST: 'host.docker.internal' # use 'host.docker.internal' if mysql is running on the local machine, or the IP address of the database server
+
+MOTIF_ANNOTATION: './data/motifs.csv.gz'  # default path to cluster motif file motifs.csv.gz
+MOTIF_TF_ANNOTATION: './data/motifs_indv.csv.gz'  # default path to tf motif file motifs_indv.csv.gz
+GENE_LISTS: './commongenelists'  # default path to optional gene list folder
+TARGET_NETWORKS: './target_networks' # default path to optional target network folder
+MOTIF_CLUSTER_INFO: './data/cluster_info.csv.gz'  # default path to cluster_info.csv.gz
+```
+- 4. Build the docker images
+```bash
+docker compose down # run this to stop any running containers
+```
+then
+```bash
+docker-compose build
+```
+If you are building from a Windows or Mac machine, you may need to set these environment variables:
+```bash
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1  DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose build
+```
+And finally:
+```bash
+COMPOSE_PROJECT_NAME=connectf docker compose up
+```
+- 5. The api should be running on `http://localhost:8001/api` and the frontend should be running on `http://localhost:80`
+
 ### Data
 
 All data for this project can be found at https://connectf.s3.amazonaws.com/connectf_data_release_v1.tar.gz
+
