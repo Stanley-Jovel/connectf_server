@@ -10,7 +10,6 @@ COPY . /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-EXPOSE 8001
+RUN chmod +x /app/wait-for-it.sh
 
-# Start server in production
-CMD ["gunicorn", "--workers", "5", "--timeout", "200", "--bind", "0.0.0.0:8001", "-m", "007", "connectf.wsgi"]
+EXPOSE 8001
