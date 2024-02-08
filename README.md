@@ -186,20 +186,52 @@ The front end of this project is built with ReactJS. You can find it at [connect
 
 ### Containerization
 
-To run both the backend and frontend in a containerized environment, you can use the provided `Dockerfiles` and `docker-compose.yml` files.
+To run all three -databse, backend and frontend- in a containerized environment, use the provided `Dockerfiles` and `docker-compose.yml` files.
 
-- 1. Make sure the folders for projects `connectf_react` and `connectf_server` are siblings.
+- 1. The docker compose script expects all gene data to be located at `connectf_server/connectf_data_release_v1/` folder, following the structure:
+```bash
+connectf_server
+├── connectf_data_release_v1
+│   ├── arabidopsis
+│   │   ├── additional_edges/
+│   │   ├── data/
+│   │   ├── gene_lists/
+│   │   ├── metadata/
+│   │   ├── motifs/
+│   │   ├── networks/
+│   │   ├── annotation.csv.gz
+│   ├── maize
+│   │   ├── same structure as arabidopsis
+│   ├── rice
+│   │   ├── same structure as arabidopsis
+```
+- 2. Make sure the folders for projects `connectf_react` and `connectf_server` are siblings.
 - 2. cd into connectf_react and build a production version of the React app
 ```bash
 cd ../connectf_react
 npm run build
 ```
-- 3. cd back to connectf_server and make sure the `./dockerfiles/config.yaml` file is set up correctly.
+- 3. cd back to connectf_server and make sure the `./connectf/config.yaml` file is set up correctly.
+```yaml
+SECRET_KEY: 'django_secret_key'
+DEBUG: True
+DATABASE:
+  NAME: 'connectf'
+  USER: 'connectfuser'
+  PASSWORD: 'connectfpwd'
+  HOST: 'localhost'
+
+MOTIF_ANNOTATION: './connectf_data_release_v1/arabidopsis/motifs/motifs.csv.gz'  # path to cluster motif file motifs.csv.gz
+MOTIF_TF_ANNOTATION: './connectf_data_release_v1/arabidopsis/motifs/motifs_indv.csv.gz'  # path to tf motif file motifs_indv.csv.gz
+GENE_LISTS: './connectf_data_release_v1/arabidopsis/gene_lists'  # optional gene list folder
+TARGET_NETWORKS: './connectf_data_release_v1/arabidopsis/networks' # optional target network folder
+MOTIF_CLUSTER_INFO: './connectf_data_release_v1/arabidopsis/common/cluster_info.csv.gz'  # path to cluster_info.csv.gz
+```
 - 4. Build the docker images
 ```bash
 docker compose down # run this to stop any running containers
 ```
-then
+- 5. then
 ```bash
 docker-compose build
 ```
@@ -207,11 +239,20 @@ If you are building from a Windows or Mac machine, you may need to set these env
 ```bash
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1  DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose build
 ```
-And finally:
+6. Finally, if this is the first time you are running the containers, then you want to import your gene data into the database. You can do this by adding the env variable `IMPORT` and specify the folder that contains the gene data. For example, 'arabiopsis' or 'maize' or 'rice':
+```bash
+COMPOSE_PROJECT_NAME=connectf IMPORT=arabidopsis docker compose up
+```
+However, if you have already imported the data in a previous run, you can simply run the containers without the `IMPORT` env variable:
 ```bash
 COMPOSE_PROJECT_NAME=connectf docker compose up
 ```
+
+Note that running docker compose up with the `IMPORT` env variable multiple times will result in multiple imports of the same data.
+
 - 5. The api should be running on `http://localhost:8001/api` and the frontend should be running on `http://localhost:80`
+
+<img width="1155" alt="image" src="https://github.com/coruzzilab/connectf_server/assets/1679438/cab90ef1-a3d5-47b5-af47-de85cb6debf8">
 
 ### Data
 
