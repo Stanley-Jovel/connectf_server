@@ -15,13 +15,12 @@ services:
     build:
       context: .
       dockerfile: ./dockerfiles/Dockerfile.backend
-    # mysql takes a few seconds to start up, so we wait for it
-    command: /app/wait-for-it.sh mysql:3306 --timeout=30 -- bash -c "
-        python manage.py migrate && \
-        python manage.py import_annotation -i ./connectf_data_release_v1/arabidopsis/annotation.20200324.csv.gz && \
-        python manage.py import_data ./connectf_data_release_v1/arabidopsis/data ./connectf_data_release_v1/arabidopsis/metadata && \
-        gunicorn --workers 5 --timeout 200 --bind 0.0.0.0:8001 -m 007 connectf.wsgi"
-        # python manage.py import_edges ./connectf_data_release_v1/arabidopsis/additional_edges && \
+    environment:
+      - IMPORT=$IMPORT
+      - MYSQL_DOCKER_HOST=mysql
+    command: /app/dockerfiles/wait-for-it.sh mysql:3306 --timeout=30 -- bash -c "
+        /app/dockerfiles/import-data.sh && \
+        gunicorn --workers 3 --timeout 200 --bind 0.0.0.0:8001 -m 007 connectf.wsgi"
     ports:
       - "8001:8001"
     depends_on: 
