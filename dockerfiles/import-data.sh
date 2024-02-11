@@ -30,7 +30,6 @@ if [ -n "$IMPORT" ]; then
   # for each file either .csv or .csv.gz found in ./connectf_data_release_v1/$IMPORT/additional_edges, import it
   for file in ./connectf_data_release_v1/$IMPORT/additional_edges/*; do
     if [ -f "$file" ]; then
-    echo "Importing edges file: $file"
       python manage.py import_edges $file
     fi
   done

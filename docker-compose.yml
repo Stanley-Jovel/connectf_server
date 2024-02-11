@@ -3,6 +3,7 @@ version: '3'
 services:
   mysql:
     image: mysql:latest
+    platform: linux/amd64
     environment:
       - MYSQL_DATABASE=connectf
       - MYSQL_USER=connectfuser
@@ -13,6 +14,7 @@ services:
 
   backend:
     build:
+      no_cache: true
       context: .
       dockerfile: ./dockerfiles/Dockerfile.backend
     environment:

@@ -200,6 +200,8 @@ connectf_server
 │   │   ├── motifs/
 │   │   ├── networks/
 │   │   ├── annotation.csv.gz
+│   ├── common
+│   │   ├── cluster_info.csv.gz
 │   ├── maize
 │   │   ├── same structure as arabidopsis
 │   ├── rice
@@ -213,7 +215,7 @@ npm run build
 ```
 - 3. cd back to connectf_server and make sure the `./connectf/config.yaml` file is set up correctly.
 ```yaml
-SECRET_KEY: 'django_secret_key'
+SECRET_KEY: 'django_secret_key' # see https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key
 DEBUG: True
 DATABASE:
   NAME: 'connectf'
@@ -221,34 +223,23 @@ DATABASE:
   PASSWORD: 'connectfpwd'
   HOST: 'localhost'
 
-MOTIF_ANNOTATION: './connectf_data_release_v1/arabidopsis/motifs/motifs.csv.gz'  # path to cluster motif file motifs.csv.gz
-MOTIF_TF_ANNOTATION: './connectf_data_release_v1/arabidopsis/motifs/motifs_indv.csv.gz'  # path to tf motif file motifs_indv.csv.gz
-GENE_LISTS: './connectf_data_release_v1/arabidopsis/gene_lists'  # optional gene list folder
-TARGET_NETWORKS: './connectf_data_release_v1/arabidopsis/networks' # optional target network folder
-MOTIF_CLUSTER_INFO: './connectf_data_release_v1/arabidopsis/common/cluster_info.csv.gz'  # path to cluster_info.csv.gz
-```
-- 4. Build the docker images
-```bash
-docker compose down # run this to stop any running containers
-```
-- 5. then
-```bash
-docker-compose build
-```
-If you are building from a Windows or Mac machine, you may need to set these environment variables:
-```bash
-COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1  DOCKER_DEFAULT_PLATFORM=linux/amd64 docker-compose build
-```
-6. Finally, if this is the first time you are running the containers, then you want to import your gene data into the database. You can do this by adding the env variable `IMPORT` and specify the folder that contains the gene data. For example, 'arabiopsis' or 'maize' or 'rice':
-```bash
-COMPOSE_PROJECT_NAME=connectf IMPORT=arabidopsis docker compose up
-```
-However, if you have already imported the data in a previous run, you can simply run the containers without the `IMPORT` env variable:
-```bash
-COMPOSE_PROJECT_NAME=connectf docker compose up
+MOTIF_ANNOTATION: './connectf_data_release_v1/$IMPORT/motifs/motifs.csv.gz'  # path to cluster motif file motifs.csv.gz
+MOTIF_TF_ANNOTATION: './connectf_data_release_v1/$IMPORT/motifs/motifs_indv.csv.gz'  # path to tf motif file motifs_indv.csv.gz
+MOTIF_CLUSTER_INFO: './connectf_data_release_v1/common/cluster_info.csv.gz'  # path to cluster_info.csv.gz
+GENE_LISTS: './connectf_data_release_v1/$IMPORT/gene_lists'  # optional gene list folder
+TARGET_NETWORKS: './connectf_data_release_v1/$IMPORT/networks' # optional target network folder
 ```
 
-Note that running docker compose up with the `IMPORT` env variable multiple times will result in multiple imports of the same data.
+- 4. Make sure there are no running containers:
+```bash
+docker compose down
+```
+
+- 5. Finally, build and run images:
+```bash
+COMPOSE_PROJECT_NAME=connectf IMPORT=arabidopsis docker compose up --build
+```
+The env var `IMPORT` is always required and signals to install all your gene data into the mysql database if this is the first time running the containers. `IMPORT` is a string that specifies the folder that contains your gene data, for example, 'arabiopsis' or 'maize' or 'rice'.
 
 - 5. The api should be running on `http://localhost:8001/api` and the frontend should be running on `http://localhost:80`
 

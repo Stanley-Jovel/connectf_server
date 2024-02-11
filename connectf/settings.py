@@ -24,7 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR, 'connectf/config.yaml')
 
 with open(CONFIG_PATH) as f:
-    CONFIG = yaml.safe_load(f)
+    yaml_content_with_env_vars = os.path.expandvars(f.read())
+    CONFIG = yaml.safe_load(yaml_content_with_env_vars)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = CONFIG['SECRET_KEY']
