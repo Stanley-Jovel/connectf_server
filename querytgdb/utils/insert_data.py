@@ -35,7 +35,7 @@ def process_meta_file(f: TextIO) -> pd.DataFrame:
 
     metadata.index = metadata.index.str.upper().str.replace(' ', '_')
     metadata['special'] = metadata.index.str.extract(r'^([^a-z])', flags=re.I, expand=False).fillna('')
-    metadata.index = metadata.index.str.replace(r'^[^a-z]+', '', flags=re.I)
+    metadata.index = metadata.index.str.replace(r'^([^a-z])', '', flags=re.I, regex=True)
     metadata.columns = ['data', 'special']
 
     date_rows = metadata.index.str.contains(r'_?DATE$')
