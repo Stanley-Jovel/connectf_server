@@ -2,7 +2,7 @@
 
 # 1. Build react app stage
 FROM --platform=amd64 ubuntu:latest AS builder
-# apt-get install -y python2 && \
+
 # Install necessary dependencies for Node.js and npm
 RUN apt-get update && \
     apt-get install -y build-essential && \
@@ -14,9 +14,7 @@ RUN apt-get update && \
 WORKDIR /app
 COPY --from=connectf_react . .
 RUN npm install -g npm@10.5.0
-# RUN npm install -g npm@6.14.18
 RUN npm install
-# RUN npm rebuild node-sass
 RUN npm run build
 
 # 2. Start nginx server stage
